@@ -4,20 +4,17 @@ import { auth } from "@/lib/auth";
 
 const PUBLIC_ROUTES = ["/login", "/api/auth", "/api/webhooks"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public routes
   if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
-  // Allow API routes (tRPC, etc.)
   if (pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
 
-  // Check session
   const session = await auth.api.getSession({ headers: request.headers });
 
   if (!session && pathname !== "/login") {
