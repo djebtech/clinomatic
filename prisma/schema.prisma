@@ -1,0 +1,402 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// CORE ENTITIES
+// ============================================
+
+model Clinic {
+  id              String    @id @default(cuid())
+  name            String
+  slug            String    @unique
+  logo            String?
+  phone           String
+  email           String?
+  address         String?
+  city            String?
+
+  workingHours    Json      @default("{}")
+  holidays        DateTime[]
+
+  subscriptionPlan String   @default("BASIC")
+  monthlyFee      Int       @default(12000)
+  isActive        Boolean   @default(true)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  users               User[]
+  patients            Patient[]
+  services            Service[]
+  appointments        Appointment[]
+  doctors             Doctor[]
+  whatsappConfig      WhatsAppConfig?
+  socialIntegrations  SocialIntegration[]
+  dailyStats          DailyStats[]
+}
+
+model User {
+  id          String    @id @default(cuid())
+  clinicId    String?
+  name        String
+  phone       String    @unique
+  email       String?   @unique
+  password    String?
+  role        Role      @default(CLINIC_STAFF)
+  isActive    Boolean   @default(true)
+  lastActive  DateTime?
+  createdAt   DateTime  @default(now())
+
+  clinic      Clinic?   @relation(fields: [clinicId], references: [id])
+  confirmedAppointments Appointment[] @relation("ConfirmedBy")
+  performance AgentPerformance?
+  sessions    Session[]
+  accounts    Account[]
+
+  @@index([clinicId])
+  @@index([role])
+}
+
+enum Role {
+  SUPER_ADMIN
+  CONFIRMATION_AGENT
+  CLINIC_OWNER
+  CLINIC_STAFF
+  DOCTOR
+}
+
+model Patient {
+  id              String    @id @default(cuid())
+  clinicId        String
+  name            String
+  phone           String
+  email           String?
+  dateOfBirth     DateTime?
+  gender          String?
+  address         String?
+  notes           String?   @db.Text
+
+  phoneHash       String    @unique
+  globalRiskScore Float     @default(0)
+  tags            String[]
+  source          String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastVisit       DateTime?
+
+  clinic           Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  appointments     Appointment[]
+  whatsappMessages WhatsAppMessage[]
+
+  @@unique([clinicId, phone])
+  @@index([phoneHash])
+  @@index([clinicId])
+}
+
+model Doctor {
+  id          String   @id @default(cuid())
+  clinicId    String
+  name        String
+  specialty   String?
+  phone       String?
+  schedule    Json     @default("{}")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  clinic      Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+
+  @@index([clinicId])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  clinicId    String
+  name        String
+  nameAr      String?
+  price       Int
+  duration    Int
+  description String?  @db.Text
+  color       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  clinic      Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+
+  @@index([clinicId])
+}
+
+// ============================================
+// APPOINTMENT SYSTEM
+// ============================================
+
+model Appointment {
+  id              String    @id @default(cuid())
+  clinicId        String
+  patientId       String
+  doctorId        String?
+  serviceId       String
+
+  date            DateTime
+  duration        Int
+
+  status          AppointmentStatus @default(PENDING)
+  source          String
+  sourceMessageId String?
+
+  confirmedBy     String?
+  confirmedAt     DateTime?
+  confirmMethod   String?
+  confirmNotes    String?   @db.Text
+  confirmAttempts Int       @default(0)
+
+  attended        Boolean   @default(false)
+  attendedAt      DateTime?
+  noShowReason    String?
+
+  price           Int
+  paid            Boolean   @default(false)
+  paidAt          DateTime?
+  paymentMethod   String?
+
+  riskScore       Float?
+  remindersSent   Int       @default(0)
+  notes           String?   @db.Text
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  clinic           Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient          Patient   @relation(fields: [patientId], references: [id])
+  doctor           Doctor?   @relation(fields: [doctorId], references: [id])
+  service          Service   @relation(fields: [serviceId], references: [id])
+  confirmer        User?     @relation("ConfirmedBy", fields: [confirmedBy], references: [id])
+  whatsappMessages WhatsAppMessage[]
+
+  @@index([clinicId, date])
+  @@index([status])
+  @@index([patientId])
+  @@index([confirmedBy])
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMING
+  CONFIRMED
+  ATTENDED
+  NO_SHOW
+  CANCELLED
+  RESCHEDULED
+}
+
+// ============================================
+// WHATSAPP AUTOMATION
+// ============================================
+
+model WhatsAppConfig {
+  id              String   @id @default(cuid())
+  clinicId        String   @unique
+  phoneNumber     String
+  apiToken        String?
+  apiUrl          String?
+  isConnected     Boolean  @default(false)
+
+  autoReminder24h Boolean  @default(true)
+  autoReminder2h  Boolean  @default(true)
+  autoFollowUp    Boolean  @default(true)
+  autoRecall      Boolean  @default(false)
+  recallDays      Int      @default(180)
+
+  confirmTemplate     String? @db.Text
+  reminder24hTemplate String? @db.Text
+  reminder2hTemplate  String? @db.Text
+  followUpTemplate    String? @db.Text
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  clinic          Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+}
+
+model WhatsAppMessage {
+  id              String    @id @default(cuid())
+  clinicId        String
+  patientId       String
+  appointmentId   String?
+
+  direction       Direction
+  messageType     MessageType
+  content         String    @db.Text
+  status          MessageStatus
+
+  sentAt          DateTime  @default(now())
+  deliveredAt     DateTime?
+  readAt          DateTime?
+  repliedAt       DateTime?
+  errorMessage    String?   @db.Text
+
+  patient         Patient      @relation(fields: [patientId], references: [id])
+  appointment     Appointment? @relation(fields: [appointmentId], references: [id])
+
+  @@index([appointmentId])
+  @@index([patientId])
+  @@index([sentAt])
+}
+
+enum Direction {
+  OUTBOUND
+  INBOUND
+}
+
+enum MessageType {
+  CONFIRMATION
+  REMINDER_24H
+  REMINDER_2H
+  FOLLOW_UP
+  RECALL
+  NO_SHOW_RECOVERY
+  MANUAL
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  REPLIED
+  FAILED
+}
+
+// ============================================
+// SOCIAL MEDIA INTEGRATIONS
+// ============================================
+
+model SocialIntegration {
+  id          String    @id @default(cuid())
+  clinicId    String
+  platform    Platform
+  accountId   String
+  accountName String?
+  accessToken String    @db.Text
+  isActive    Boolean   @default(true)
+  lastSync    DateTime?
+  createdAt   DateTime  @default(now())
+
+  clinic      Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@unique([clinicId, platform])
+}
+
+enum Platform {
+  INSTAGRAM
+  FACEBOOK
+  WHATSAPP
+}
+
+// ============================================
+// ANALYTICS
+// ============================================
+
+model DailyStats {
+  id                  String   @id @default(cuid())
+  clinicId            String
+  date                DateTime @db.Date
+
+  totalBookings       Int      @default(0)
+  confirmedBookings   Int      @default(0)
+  attendedBookings    Int      @default(0)
+  noShows             Int      @default(0)
+  cancelled           Int      @default(0)
+
+  revenue             Int      @default(0)
+  lostRevenue         Int      @default(0)
+
+  newPatients         Int      @default(0)
+  returningPatients   Int      @default(0)
+
+  instagramBookings   Int      @default(0)
+  facebookBookings    Int      @default(0)
+  whatsappBookings    Int      @default(0)
+  phoneBookings       Int      @default(0)
+  walkInBookings      Int      @default(0)
+
+  createdAt           DateTime @default(now())
+
+  clinic              Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@unique([clinicId, date])
+  @@index([date])
+}
+
+model AgentPerformance {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+
+  totalConfirmed      Int      @default(0)
+  totalCalls          Int      @default(0)
+  totalWhatsApp       Int      @default(0)
+  confirmationRate    Float    @default(0)
+
+  weekConfirmed       Int      @default(0)
+  weekCalls           Int      @default(0)
+  avgConfirmTime      Int?
+
+  weekStart           DateTime
+  updatedAt           DateTime @updatedAt
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// BETTER AUTH TABLES
+// ============================================
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?   @db.Text
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+}

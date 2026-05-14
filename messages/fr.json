@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "patients": "Patients",
+    "appointments": "Rendez-vous",
+    "confirmations": "Confirmations",
+    "analytics": "Analytique",
+    "settings": "Paramètres",
+    "admin": "Administration"
+  },
+  "common": {
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "loading": "Chargement...",
+    "noData": "Aucune donnée",
+    "confirm": "Confirmer",
+    "back": "Retour"
+  },
+  "status": {
+    "PENDING": "En attente",
+    "CONFIRMING": "En cours",
+    "CONFIRMED": "Confirmé",
+    "ATTENDED": "Présent",
+    "NO_SHOW": "Absent",
+    "CANCELLED": "Annulé",
+    "RESCHEDULED": "Reporté"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "weekOf": "Semaine du",
+    "bookings": "Réservations",
+    "confirmed": "Confirmés",
+    "attended": "Présents",
+    "revenue": "Revenus",
+    "todayAppointments": "Rendez-vous aujourd'hui",
+    "topServices": "Top Services",
+    "noAppointmentsToday": "Aucun rendez-vous aujourd'hui"
+  },
+  "patients": {
+    "title": "Patients",
+    "new": "Nouveau patient",
+    "search": "Rechercher un patient...",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "source": "Source",
+    "appointments": "RDV",
+    "registeredAt": "Inscrit le"
+  },
+  "appointments": {
+    "title": "Rendez-vous",
+    "new": "Nouveau RDV",
+    "date": "Date",
+    "time": "Heure",
+    "patient": "Patient",
+    "service": "Service",
+    "doctor": "Médecin",
+    "status": "Statut",
+    "source": "Source"
+  }
+}

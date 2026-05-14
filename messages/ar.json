@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "patients": "المرضى",
+    "appointments": "المواعيد",
+    "confirmations": "التأكيدات",
+    "analytics": "التحليلات",
+    "settings": "الإعدادات",
+    "admin": "الإدارة"
+  },
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "search": "بحث",
+    "loading": "جاري التحميل...",
+    "noData": "لا توجد بيانات",
+    "confirm": "تأكيد",
+    "back": "رجوع"
+  },
+  "status": {
+    "PENDING": "قيد الانتظار",
+    "CONFIRMING": "جاري التأكيد",
+    "CONFIRMED": "مؤكد",
+    "ATTENDED": "حضر",
+    "NO_SHOW": "غائب",
+    "CANCELLED": "ملغي",
+    "RESCHEDULED": "مؤجل"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "weekOf": "أسبوع",
+    "bookings": "الحجوزات",
+    "confirmed": "المؤكدة",
+    "attended": "الحاضرون",
+    "revenue": "الإيرادات",
+    "todayAppointments": "مواعيد اليوم",
+    "topServices": "أفضل الخدمات",
+    "noAppointmentsToday": "لا توجد مواعيد اليوم"
+  },
+  "patients": {
+    "title": "المرضى",
+    "new": "مريض جديد",
+    "search": "البحث عن مريض...",
+    "name": "الاسم",
+    "phone": "الهاتف",
+    "source": "المصدر",
+    "appointments": "المواعيد",
+    "registeredAt": "تاريخ التسجيل"
+  },
+  "appointments": {
+    "title": "المواعيد",
+    "new": "موعد جديد",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "patient": "المريض",
+    "service": "الخدمة",
+    "doctor": "الطبيب",
+    "status": "الحالة",
+    "source": "المصدر"
+  }
+}
