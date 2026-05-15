@@ -21,16 +21,22 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    const { error: authError } = await signIn(email, password);
+    try {
+      const { error: authError } = await signIn(email, password);
 
-    if (authError) {
-      setError(authError);
+      if (authError) {
+        setError(authError);
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err) {
+      console.error("[Login]", err);
+      setError("Impossible de joindre le serveur. Vérifiez votre connexion.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    router.push("/dashboard");
-    router.refresh();
   };
 
   return (
@@ -51,11 +57,12 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="exemple@clinique.dz"
+              placeholder="admin@clinomatic.dz"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
+              disabled={loading}
             />
           </div>
           <div className="space-y-2">
@@ -68,6 +75,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
+              disabled={loading}
             />
           </div>
 

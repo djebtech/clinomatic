@@ -12,7 +12,10 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(rm -rf /Users/macbook/Desktop/clinomatic/src/app/api/auth/\\\\[...all\\\\] && echo \"Removed\")"
+      "Bash(rm -rf /Users/macbook/Desktop/clinomatic/src/app/api/auth/\\\\[...all\\\\] && echo \"Removed\")",
+      "Bash(git rm *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(k,v\\) for k,v in d.get\\('dependencies',{}\\).items\\(\\)]\")",
+      "Bash(npm uninstall *)"
     ]
   }
 }
