@@ -19,13 +19,12 @@ export default function ServicesSettingsPage() {
   const deleteService = trpc.service.delete.useMutation({ onSuccess: () => utils.service.list.invalidate() });
 
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", nameAr: "", price: "", duration: "30", color: "#0d9488" });
+  const [form, setForm] = useState({ name: "", price: "", duration: "30", color: "#0d9488" });
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     createService.mutate({
       name: form.name,
-      nameAr: form.nameAr || undefined,
       price: parseInt(form.price),
       duration: parseInt(form.duration),
       color: form.color,
@@ -41,7 +40,7 @@ export default function ServicesSettingsPage() {
           <Button variant="ghost" size="icon" asChild><Link href="/settings"><ArrowLeft className="h-4 w-4" /></Link></Button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Services</h1>
-            <p className="text-gray-500 text-sm">الخدمات — {services?.length} services</p>
+            <p className="text-gray-500 text-sm">{services?.length} services configurés</p>
           </div>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -51,15 +50,9 @@ export default function ServicesSettingsPage() {
           <DialogContent>
             <DialogHeader><DialogTitle>Nouveau service</DialogTitle></DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4 mt-2">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Nom (FR) *</Label>
-                  <Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Consultation" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Nom (AR)</Label>
-                  <Input value={form.nameAr} onChange={(e) => setForm({ ...form, nameAr: e.target.value })} placeholder="استشارة" dir="rtl" />
-                </div>
+              <div className="space-y-2">
+                <Label>Nom du service *</Label>
+                <Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Consultation" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -90,7 +83,7 @@ export default function ServicesSettingsPage() {
             <CardContent className="p-4 flex items-center gap-4">
               <div className="w-3 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: service.color || "#0d9488" }} />
               <div className="flex-1">
-                <p className="font-semibold">{service.name} {service.nameAr && <span className="text-gray-400 font-normal">/ {service.nameAr}</span>}</p>
+                <p className="font-semibold">{service.name}</p>
                 <p className="text-sm text-gray-500">{formatCurrency(service.price)} — {service.duration} min</p>
               </div>
               <div className="flex gap-2">

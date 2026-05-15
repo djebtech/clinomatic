@@ -67,7 +67,7 @@ function NewAppointmentForm() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Nouveau rendez-vous</h1>
-          <p className="text-gray-500 text-sm">موعد جديد</p>
+          <p className="text-gray-500 text-sm">Planifier un nouveau rendez-vous</p>
         </div>
       </div>
 

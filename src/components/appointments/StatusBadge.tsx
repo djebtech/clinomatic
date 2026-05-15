@@ -1,25 +1,25 @@
-import { Badge } from "@/components/ui/badge";
+"use client";
 
-const STATUS_CONFIG: Record<string, { label: string; labelAr: string; variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" }> = {
-  PENDING: { label: "En attente", labelAr: "قيد الانتظار", variant: "warning" },
-  CONFIRMING: { label: "En cours", labelAr: "جاري التأكيد", variant: "default" },
-  CONFIRMED: { label: "Confirmé", labelAr: "مؤكد", variant: "success" },
-  ATTENDED: { label: "Présent", labelAr: "حضر", variant: "success" },
-  NO_SHOW: { label: "Absent", labelAr: "غائب", variant: "destructive" },
-  CANCELLED: { label: "Annulé", labelAr: "ملغي", variant: "secondary" },
-  RESCHEDULED: { label: "Reporté", labelAr: "مؤجل", variant: "outline" },
+import { Badge } from "@/components/ui/badge";
+import { useT } from "@/contexts/LanguageContext";
+
+const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive" | "outline" | "success" | "warning"> = {
+  PENDING: "warning",
+  CONFIRMING: "default",
+  CONFIRMED: "success",
+  ATTENDED: "success",
+  NO_SHOW: "destructive",
+  CANCELLED: "secondary",
+  RESCHEDULED: "outline",
 };
 
 interface StatusBadgeProps {
   status: string;
-  showArabic?: boolean;
 }
 
-export function StatusBadge({ status, showArabic }: StatusBadgeProps) {
-  const config = STATUS_CONFIG[status] || { label: status, labelAr: status, variant: "secondary" as const };
-  return (
-    <Badge variant={config.variant}>
-      {showArabic ? config.labelAr : config.label}
-    </Badge>
-  );
+export function StatusBadge({ status }: StatusBadgeProps) {
+  const t = useT();
+  const variant = STATUS_VARIANTS[status] ?? "secondary";
+  const label = t(`appointments.status.${status}`) || status;
+  return <Badge variant={variant}>{label}</Badge>;
 }

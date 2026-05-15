@@ -8,8 +8,10 @@ import { PageLoader } from "@/components/shared/LoadingSpinner";
 import { Phone, MessageCircle, CheckCircle, Clock, XCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import { useT } from "@/contexts/LanguageContext";
 
 export default function ConfirmationsPage() {
+  const t = useT();
   const utils = trpc.useUtils();
   const { data: queue, isLoading } = trpc.confirmation.getQueue.useQuery({});
   const assignToMe = trpc.confirmation.assignToMe.useMutation({
@@ -28,17 +30,17 @@ export default function ConfirmationsPage() {
   return (
     <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-gray-900">File de confirmation</h1>
-        <p className="text-gray-500 text-xs md:text-sm">
-          طابور التأكيد — {queue?.length ?? 0} rendez-vous en attente
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900">{t("nav.confirmations")}</h1>
+        <p className="text-gray-600 text-xs md:text-sm">
+          {queue?.length ?? 0} {t("appointments.title").toLowerCase()}
         </p>
       </div>
 
       {queue?.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
           <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
-          <p className="text-gray-600 font-medium">File vide!</p>
-          <p className="text-gray-400 text-sm">Tous les rendez-vous ont été traités.</p>
+          <p className="text-gray-700 font-medium">{t("common.success")}</p>
+          <p className="text-gray-500 text-sm mt-1">{t("common.no_results")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -60,7 +62,7 @@ export default function ConfirmationsPage() {
                       variant={apt.status === "CONFIRMING" ? "default" : "secondary"}
                       className="text-xs"
                     >
-                      {apt.status === "CONFIRMING" ? "En cours" : "En attente"}
+                      {t(`appointments.status.${apt.status}`)}
                     </Badge>
                   </div>
 
@@ -75,22 +77,22 @@ export default function ConfirmationsPage() {
                       </Link>
                       <span className="text-gray-400 text-xs capitalize">via {apt.source}</span>
                     </div>
-                    <p className="text-sm text-gray-600">{apt.service.name} — {formatCurrency(apt.price)}</p>
-                    <p className="text-xs text-gray-400">{apt.clinic.name}</p>
+                    <p className="text-sm text-gray-700">{apt.service.name} — {formatCurrency(apt.price)}</p>
+                    <p className="text-xs text-gray-500">{apt.clinic.name}</p>
                     {apt.confirmAttempts > 0 && (
                       <p className="text-xs text-orange-500 mt-1">
                         <Clock className="h-3 w-3 inline mr-1" />
-                        {apt.confirmAttempts} tentative(s)
+                        {apt.confirmAttempts} {t("common.confirm").toLowerCase()}(s)
                       </p>
                     )}
                   </div>
 
-                  {/* Actions — horizontal scroll on mobile, vertical on desktop */}
+                  {/* Actions */}
                   <div className="flex gap-2 sm:flex-col sm:gap-2 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 sm:flex-shrink-0">
                     <Button size="sm" variant="outline" className="gap-1 text-xs flex-shrink-0" asChild>
                       <a href={`tel:${apt.patient.phone}`}>
                         <Phone className="h-3 w-3" />
-                        <span>Appeler</span>
+                        <span>{t("common.phone")}</span>
                       </a>
                     </Button>
 
@@ -114,7 +116,7 @@ export default function ConfirmationsPage() {
                       disabled={confirm.isPending}
                     >
                       <CheckCircle className="h-3 w-3" />
-                      <span>Confirmé</span>
+                      <span>{t("appointments.status.CONFIRMED")}</span>
                     </Button>
 
                     <Button
@@ -125,7 +127,7 @@ export default function ConfirmationsPage() {
                       disabled={cancel.isPending}
                     >
                       <XCircle className="h-3 w-3" />
-                      <span>Annuler</span>
+                      <span>{t("appointments.status.CANCELLED")}</span>
                     </Button>
                   </div>
                 </div>

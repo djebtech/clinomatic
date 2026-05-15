@@ -10,8 +10,10 @@ import { CalendarPlus, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addDays, subDays, eachDayOfInterval } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useT } from "@/contexts/LanguageContext";
 
 export default function AppointmentsPage() {
+  const t = useT();
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [mobileDay, setMobileDay] = useState(new Date());
 
@@ -36,14 +38,14 @@ export default function AppointmentsPage() {
       {/* Page header */}
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate">Rendez-vous</h1>
-          <p className="text-gray-500 text-xs md:text-sm">المواعيد — vue hebdomadaire</p>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate">{t("appointments.title")}</h1>
+          <p className="text-gray-600 text-xs md:text-sm">{t("appointments.subtitle")}</p>
         </div>
         <Button asChild size="sm" className="flex-shrink-0">
           <Link href="/appointments/new">
             <CalendarPlus className="h-4 w-4" />
-            <span className="hidden sm:inline ml-1">Nouveau RDV</span>
-            <span className="sm:hidden ml-1">+ RDV</span>
+            <span className="hidden sm:inline ml-1">{t("appointments.new")}</span>
+            <span className="sm:hidden ml-1">+</span>
           </Link>
         </Button>
       </div>
@@ -65,7 +67,7 @@ export default function AppointmentsPage() {
           <p className="font-semibold text-gray-900 text-sm md:text-base">
             {format(weekStart, "d MMM", { locale: fr })} — {format(weekEnd, "d MMM yyyy", { locale: fr })}
           </p>
-          <p className="text-xs text-gray-500">{appointments?.length ?? 0} rendez-vous</p>
+          <p className="text-xs text-gray-600">{appointments?.length ?? 0} {t("appointments.title").toLowerCase()}</p>
         </div>
         <Button
           variant="ghost"
@@ -108,12 +110,7 @@ export default function AppointmentsPage() {
                     <span className="capitalize">{format(day, "EEE", { locale: fr })}</span>
                     <span className="text-base font-bold">{format(day, "d")}</span>
                     {count > 0 && (
-                      <span
-                        className={cn(
-                          "text-[10px] mt-0.5",
-                          isSelected ? "text-teal-100" : "text-teal-600"
-                        )}
-                      >
+                      <span className={cn("text-[10px] mt-0.5", isSelected ? "text-teal-100" : "text-teal-600")}>
                         {count}
                       </span>
                     )}
@@ -126,7 +123,7 @@ export default function AppointmentsPage() {
             <div className="space-y-2">
               {mobileDayApts.length === 0 ? (
                 <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-                  <p className="text-sm text-gray-400">Aucun rendez-vous ce jour</p>
+                  <p className="text-sm text-gray-500">{t("appointments.no_appointments")}</p>
                 </div>
               ) : (
                 mobileDayApts.map((apt) => (
@@ -142,7 +139,7 @@ export default function AppointmentsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-gray-900 truncate">{apt.patient.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{apt.service.name}</p>
+                      <p className="text-xs text-gray-600 truncate">{apt.service.name}</p>
                     </div>
                     <StatusBadge status={apt.status} />
                   </Link>
@@ -158,15 +155,8 @@ export default function AppointmentsPage() {
               const isToday = day.toDateString() === new Date().toDateString();
               return (
                 <div key={day.toISOString()} className="space-y-2">
-                  <div
-                    className={cn(
-                      "text-center py-2 rounded-lg",
-                      isToday ? "bg-teal-600 text-white" : "bg-gray-50"
-                    )}
-                  >
-                    <p className="text-xs font-medium capitalize">
-                      {format(day, "EEE", { locale: fr })}
-                    </p>
+                  <div className={cn("text-center py-2 rounded-lg", isToday ? "bg-teal-600 text-white" : "bg-gray-50")}>
+                    <p className="text-xs font-medium capitalize">{format(day, "EEE", { locale: fr })}</p>
                     <p className="text-lg font-bold">{format(day, "d")}</p>
                   </div>
                   <div className="space-y-1 min-h-[200px]">
@@ -176,19 +166,15 @@ export default function AppointmentsPage() {
                         href={`/appointments/${apt.id}`}
                         className="block p-2 bg-white rounded-lg border border-gray-200 hover:border-teal-300 hover:shadow-sm transition-all text-xs"
                       >
-                        <p className="font-semibold text-teal-700">
-                          {format(new Date(apt.date), "HH:mm")}
-                        </p>
+                        <p className="font-semibold text-teal-700">{format(new Date(apt.date), "HH:mm")}</p>
                         <p className="text-gray-800 truncate">{apt.patient.name}</p>
-                        <p className="text-gray-500 truncate">{apt.service.name}</p>
-                        <div className="mt-1">
-                          <StatusBadge status={apt.status} />
-                        </div>
+                        <p className="text-gray-600 truncate">{apt.service.name}</p>
+                        <div className="mt-1"><StatusBadge status={apt.status} /></div>
                       </Link>
                     ))}
                     {dayApts.length === 0 && (
                       <div className="h-full flex items-center justify-center">
-                        <p className="text-xs text-gray-300">Libre</p>
+                        <p className="text-xs text-gray-300">{t("appointments.free")}</p>
                       </div>
                     )}
                   </div>

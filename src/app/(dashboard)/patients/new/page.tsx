@@ -48,7 +48,7 @@ export default function NewPatientPage() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Nouveau patient</h1>
-          <p className="text-gray-500 text-sm">مريض جديد</p>
+          <p className="text-gray-500 text-sm">Enregistrer un nouveau patient</p>
         </div>
       </div>
 
@@ -77,8 +77,8 @@ export default function NewPatientPage() {
                 <Select value={form.gender} onValueChange={(v) => setForm({ ...form, gender: v })}>
                   <SelectTrigger id="gender"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MALE">Homme — ذكر</SelectItem>
-                    <SelectItem value="FEMALE">Femme — أنثى</SelectItem>
+                    <SelectItem value="MALE">Homme</SelectItem>
+                    <SelectItem value="FEMALE">Femme</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -55,13 +55,13 @@ const ALGERIAN_CITIES = [
 ];
 
 const DAYS = [
-  { key: "monday", fr: "Lundi", ar: "الاثنين" },
-  { key: "tuesday", fr: "Mardi", ar: "الثلاثاء" },
-  { key: "wednesday", fr: "Mercredi", ar: "الأربعاء" },
-  { key: "thursday", fr: "Jeudi", ar: "الخميس" },
-  { key: "friday", fr: "Vendredi", ar: "الجمعة" },
-  { key: "saturday", fr: "Samedi", ar: "السبت" },
-  { key: "sunday", fr: "Dimanche", ar: "الأحد" },
+  { key: "monday", label: "Lundi" },
+  { key: "tuesday", label: "Mardi" },
+  { key: "wednesday", label: "Mercredi" },
+  { key: "thursday", label: "Jeudi" },
+  { key: "friday", label: "Vendredi" },
+  { key: "saturday", label: "Samedi" },
+  { key: "sunday", label: "Dimanche" },
 ];
 
 type SubscriptionPlan = "BASIC" | "PRO" | "ENTERPRISE";
@@ -314,8 +314,7 @@ export default function NewClinicPage() {
           <Building2 className="w-5 h-5 text-teal-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nouvelle clinique</h1>
-          <p className="text-sm text-gray-500">عيادة جديدة</p>
+          <h1 className="text-2xl font-bold text-gray-900">Nouvelle Clinique</h1>
         </div>
       </div>
 
@@ -512,10 +511,7 @@ export default function NewClinicPage() {
                     >
                       {/* Day name */}
                       <div className="w-36 shrink-0">
-                        <span className="text-sm font-medium text-gray-800">{day.fr}</span>
-                        <span className="text-xs text-gray-400 mr-1 ml-2 font-arabic">
-                          {day.ar}
-                        </span>
+                        <span className="text-sm font-medium text-gray-800">{day.label}</span>
                       </div>
 
                       {/* Switch */}
@@ -547,7 +543,7 @@ export default function NewClinicPage() {
                         </div>
                       ) : (
                         <span className="text-sm text-gray-400 italic ml-auto sm:ml-0">
-                          Fermé / مغلق
+                          —
                         </span>
                       )}
                     </div>

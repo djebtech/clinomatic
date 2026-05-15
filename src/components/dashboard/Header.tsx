@@ -38,7 +38,7 @@ function LanguageSwitcher() {
       <Button
         variant="ghost"
         size="icon"
-        title="Language / اللغة"
+        title="Change language"
         className="h-8 w-8"
         onClick={() => setOpen((o) => !o)}
         aria-label="Change language"

@@ -14,7 +14,7 @@ export default function IntegrationsPage() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Intégrations</h1>
-          <p className="text-gray-500 text-sm">التكاملات — réseaux sociaux</p>
+          <p className="text-gray-500 text-sm">Instagram, Facebook, réseaux sociaux</p>
         </div>
       </div>
 

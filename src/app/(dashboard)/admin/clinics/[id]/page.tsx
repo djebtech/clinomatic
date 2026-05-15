@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { useT } from "@/contexts/LanguageContext";
 import {
   ArrowLeft, Edit, Phone, Mail, MapPin, Clock, Calendar,
   Plus, Trash2, Pencil, MoreVertical, Users, Stethoscope,
@@ -25,13 +26,13 @@ import {
 } from "lucide-react";
 
 const DAYS = [
-  { key: "monday",    fr: "Lundi",     ar: "الاثنين" },
-  { key: "tuesday",   fr: "Mardi",     ar: "الثلاثاء" },
-  { key: "wednesday", fr: "Mercredi",  ar: "الأربعاء" },
-  { key: "thursday",  fr: "Jeudi",     ar: "الخميس" },
-  { key: "friday",    fr: "Vendredi",  ar: "الجمعة" },
-  { key: "saturday",  fr: "Samedi",    ar: "السبت" },
-  { key: "sunday",    fr: "Dimanche",  ar: "الأحد" },
+  { key: "monday",    label: "Lundi"    },
+  { key: "tuesday",   label: "Mardi"    },
+  { key: "wednesday", label: "Mercredi" },
+  { key: "thursday",  label: "Jeudi"    },
+  { key: "friday",    label: "Vendredi" },
+  { key: "saturday",  label: "Samedi"   },
+  { key: "sunday",    label: "Dimanche" },
 ];
 
 const SPECIALTIES = [
@@ -68,6 +69,7 @@ export default function ClinicDetailPage() {
   const router = useRouter();
   const id = params.id as string;
   const utils = trpc.useUtils();
+  const t = useT();
 
   const { data: clinic, isLoading } = trpc.clinic.adminGetById.useQuery({ id });
 
@@ -319,13 +321,12 @@ export default function ClinicDetailPage() {
                     return (
                       <div key={d.key} className="flex items-center justify-between text-sm py-1 border-b border-gray-50 last:border-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium w-20">{d.fr}</span>
-                          <span className="text-gray-400 text-xs" dir="rtl">{d.ar}</span>
+                          <span className="font-medium w-20">{d.label}</span>
                         </div>
                         {h?.open ? (
                           <span className="text-gray-700">{h.start} – {h.end}</span>
                         ) : (
-                          <span className="text-gray-400">Fermé / مغلق</span>
+                          <span className="text-gray-400">—</span>
                         )}
                       </div>
                     );
@@ -372,7 +373,7 @@ export default function ClinicDetailPage() {
         <TabsContent value="doctors">
           <Card>
             <CardHeader className="flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base">Médecins / الأطباء</CardTitle>
+              <CardTitle className="text-base">{clinic.doctors.length} {t("clinics.doctors")}</CardTitle>
               <Button size="sm" onClick={() => setAddDoctorOpen(true)}>
                 <Plus className="h-4 w-4 mr-1" />Ajouter
               </Button>
@@ -435,7 +436,7 @@ export default function ClinicDetailPage() {
         {/* ── TAB: SERVICES ─────────────────────────────────────────────────── */}
         <TabsContent value="services">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Services / الخدمات</h2>
+            <h2 className="font-semibold text-gray-900">{t("clinics.services")}</h2>
             <Button size="sm" onClick={() => setAddServiceOpen(true)}>
               <Plus className="h-4 w-4 mr-1" />Ajouter
             </Button>
@@ -487,7 +488,7 @@ export default function ClinicDetailPage() {
         <TabsContent value="staff">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Équipe / الفريق ({clinic.users.length})</CardTitle>
+              <CardTitle className="text-base">{t("clinics.staff")} ({clinic.users.length})</CardTitle>
             </CardHeader>
             <CardContent>
               {clinic.users.length === 0 ? (
@@ -614,7 +615,7 @@ export default function ClinicDetailPage() {
       {/* Add Doctor */}
       <Dialog open={addDoctorOpen} onOpenChange={setAddDoctorOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Ajouter un médecin / إضافة طبيب</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Ajouter un médecin</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
             <div><Label>Nom complet *</Label><Input className="mt-1" value={doctorForm.name} onChange={(e) => setDoctorForm((p) => ({ ...p, name: e.target.value }))} placeholder="Dr. Nom Prénom" /></div>
             <div>
@@ -663,7 +664,7 @@ export default function ClinicDetailPage() {
       <Dialog open={!!deleteDoctorId} onOpenChange={() => setDeleteDoctorId(null)}>
         <DialogContent>
           <DialogHeader><DialogTitle>Supprimer le médecin?</DialogTitle></DialogHeader>
-          <p className="text-sm text-gray-600">Cette action est irréversible. هل أنت متأكد؟</p>
+          <p className="text-sm text-gray-600">Cette action est irréversible.</p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDoctorId(null)}>Annuler</Button>
             <Button variant="destructive" onClick={() => { if (deleteDoctorId) deleteDoctor.mutate({ id: deleteDoctorId }); setDeleteDoctorId(null); }} disabled={deleteDoctor.isPending}>
@@ -676,7 +677,7 @@ export default function ClinicDetailPage() {
       {/* Add Service */}
       <Dialog open={addServiceOpen} onOpenChange={setAddServiceOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Ajouter un service / إضافة خدمة</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Ajouter un service</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
             <div><Label>Nom (Français) *</Label><Input className="mt-1" value={serviceForm.name} onChange={(e) => setServiceForm((p) => ({ ...p, name: e.target.value }))} /></div>
             <div><Label>Nom (Arabe)</Label><Input className="mt-1" dir="rtl" value={serviceForm.nameAr} onChange={(e) => setServiceForm((p) => ({ ...p, nameAr: e.target.value }))} /></div>
@@ -735,7 +736,7 @@ export default function ClinicDetailPage() {
       <Dialog open={!!deleteServiceId} onOpenChange={() => setDeleteServiceId(null)}>
         <DialogContent>
           <DialogHeader><DialogTitle>Supprimer le service?</DialogTitle></DialogHeader>
-          <p className="text-sm text-gray-600">Cette action est irréversible. هل أنت متأكد؟</p>
+          <p className="text-sm text-gray-600">Cette action est irréversible.</p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteServiceId(null)}>Annuler</Button>
             <Button variant="destructive" onClick={() => { if (deleteServiceId) deleteService.mutate({ id: deleteServiceId }); setDeleteServiceId(null); }} disabled={deleteService.isPending}>
@@ -750,8 +751,7 @@ export default function ClinicDetailPage() {
         <DialogContent>
           <DialogHeader><DialogTitle className="text-red-700">Supprimer la clinique?</DialogTitle></DialogHeader>
           <p className="text-sm text-gray-600">
-            Êtes-vous sûr de vouloir supprimer <strong>{clinic.name}</strong>? Cette action est irréversible — tous les patients, rendez-vous et données seront perdus.
-            <br /><span className="text-xs text-gray-400" dir="rtl">هل أنت متأكد؟ هذا الإجراء لا رجعة فيه.</span>
+            {t("clinics.delete_confirm")} <strong>{clinic.name}</strong>
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteClinicOpen(false)}>Annuler</Button>

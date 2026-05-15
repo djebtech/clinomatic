@@ -18,7 +18,7 @@ export default function AdminAgentsPage() {
         <Button variant="ghost" size="icon" asChild><Link href="/admin"><ArrowLeft className="h-4 w-4" /></Link></Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Performance des agents</h1>
-          <p className="text-gray-500 text-sm">أداء الوكلاء — {performance?.length} agents</p>
+          <p className="text-gray-500 text-sm">{performance?.length} agents · confirmations et taux</p>
         </div>
       </div>
 

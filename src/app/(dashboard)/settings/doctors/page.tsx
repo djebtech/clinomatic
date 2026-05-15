@@ -44,7 +44,7 @@ export default function DoctorsSettingsPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Médecins</h1>
-            <p className="text-gray-500 text-sm">الأطباء — {doctors?.length} médecins</p>
+            <p className="text-gray-500 text-sm">{doctors?.length} médecins configurés</p>
           </div>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>

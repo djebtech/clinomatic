@@ -9,23 +9,32 @@ import {
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "./SidebarContext";
+import { useT } from "@/contexts/LanguageContext";
 
-const navigation = [
-  { name: "Tableau de bord", nameAr: "لوحة التحكم", href: "/dashboard", icon: LayoutDashboard, roles: ["ALL"] },
-  { name: "Patients", nameAr: "المرضى", href: "/patients", icon: Users, roles: ["CLINIC_OWNER", "CLINIC_STAFF", "DOCTOR"] },
-  { name: "Rendez-vous", nameAr: "المواعيد", href: "/appointments", icon: Calendar, roles: ["CLINIC_OWNER", "CLINIC_STAFF", "DOCTOR"] },
-  { name: "Confirmations", nameAr: "التأكيدات", href: "/confirmations", icon: CheckCircle, roles: ["CONFIRMATION_AGENT", "SUPER_ADMIN"] },
-  { name: "Analytique", nameAr: "التحليلات", href: "/analytics", icon: BarChart3, roles: ["CLINIC_OWNER", "SUPER_ADMIN"] },
-  { name: "Paramètres", nameAr: "الإعدادات", href: "/settings", icon: Settings, roles: ["CLINIC_OWNER"] },
-  { name: "Admin", nameAr: "الإدارة", href: "/admin", icon: Building2, roles: ["SUPER_ADMIN"] },
+type NavItem = {
+  key: string;
+  href: string;
+  icon: React.ElementType;
+  roles: string[];
+};
+
+const NAV_ITEMS: NavItem[] = [
+  { key: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ALL"] },
+  { key: "nav.patients", href: "/patients", icon: Users, roles: ["CLINIC_OWNER", "CLINIC_STAFF", "DOCTOR"] },
+  { key: "nav.appointments", href: "/appointments", icon: Calendar, roles: ["CLINIC_OWNER", "CLINIC_STAFF", "DOCTOR"] },
+  { key: "nav.confirmations", href: "/confirmations", icon: CheckCircle, roles: ["CONFIRMATION_AGENT", "SUPER_ADMIN"] },
+  { key: "nav.analytics", href: "/analytics", icon: BarChart3, roles: ["CLINIC_OWNER", "SUPER_ADMIN"] },
+  { key: "nav.settings", href: "/settings", icon: Settings, roles: ["CLINIC_OWNER"] },
+  { key: "nav.admin", href: "/admin", icon: Building2, roles: ["SUPER_ADMIN"] },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const { user } = useCurrentUser();
   const { open, setOpen } = useSidebar();
+  const t = useT();
 
-  const filtered = navigation.filter(
+  const filtered = NAV_ITEMS.filter(
     (item) => item.roles.includes("ALL") || item.roles.includes(user?.role || "")
   );
 
@@ -59,7 +68,7 @@ export function Sidebar() {
           <button
             onClick={() => setOpen(false)}
             className="md:hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-500"
-            aria-label="Fermer le menu"
+            aria-label="Close menu"
           >
             <X className="h-5 w-5" />
           </button>
@@ -87,15 +96,7 @@ export function Sidebar() {
                     isActive ? "text-teal-600" : "text-gray-400"
                   )}
                 />
-                <span>{item.name}</span>
-                {item.nameAr && (
-                  <span
-                    className="ml-auto text-xs text-gray-400 font-normal hidden lg:block"
-                    dir="rtl"
-                  >
-                    {item.nameAr}
-                  </span>
-                )}
+                <span>{t(item.key)}</span>
               </Link>
             );
           })}

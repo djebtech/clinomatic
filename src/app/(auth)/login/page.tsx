@@ -99,7 +99,6 @@ export default function LoginPage() {
 
         <div className="mt-4 text-center text-xs text-gray-500">
           <p>Plateforme réservée aux professionnels de santé</p>
-          <p className="mt-1" dir="rtl">منصة مخصصة للمهنيين الصحيين</p>
         </div>
       </CardContent>
     </Card>
