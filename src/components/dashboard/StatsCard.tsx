@@ -24,22 +24,27 @@ export function StatsCard({ title, value, subtitle, change, icon, className }: S
 
   return (
     <Card className={cn("", className)}>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-medium text-gray-500">{title}</p>
+      <CardContent className="p-4 md:p-6">
+        <div className="flex items-center justify-between mb-2 md:mb-3">
+          <p className="text-xs md:text-sm font-medium text-gray-500 leading-tight">{title}</p>
           {Icon && (
-            <div className="w-9 h-9 bg-teal-50 rounded-lg flex items-center justify-center">
-              <Icon className="h-5 w-5 text-teal-600" />
+            <div className="w-7 h-7 md:w-9 md:h-9 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Icon className="h-4 w-4 md:h-5 md:w-5 text-teal-600" />
             </div>
           )}
         </div>
         <div className="flex items-end justify-between">
-          <div>
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
+          <div className="min-w-0">
+            <p className="text-xl md:text-2xl font-bold text-gray-900 truncate">{value}</p>
             {subtitle && <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>}
           </div>
           {change !== undefined && (
-            <div className={cn("flex items-center gap-1 text-xs font-medium", isPositive ? "text-green-600" : "text-red-500")}>
+            <div
+              className={cn(
+                "flex items-center gap-0.5 text-xs font-medium flex-shrink-0 ml-1",
+                isPositive ? "text-green-600" : "text-red-500"
+              )}
+            >
               {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {Math.abs(change).toFixed(1)}%
             </div>

@@ -20,26 +20,28 @@ export default function PatientsPage() {
   const patients = data?.pages.flatMap((p) => p.patients) ?? [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Patients</h1>
-          <p className="text-gray-500 text-sm">المرضى — {patients.length} patients</p>
+    <div className="space-y-4 md:space-y-6">
+      {/* Page header */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Patients</h1>
+          <p className="text-gray-500 text-xs md:text-sm">المرضى — {patients.length} patients</p>
         </div>
-        <Button asChild>
+        <Button asChild size="sm" className="flex-shrink-0">
           <Link href="/patients/new">
             <UserPlus className="h-4 w-4" />
-            Nouveau patient
+            <span className="hidden sm:inline ml-1">Nouveau patient</span>
+            <span className="sm:hidden ml-1">+ Patient</span>
           </Link>
         </Button>
       </div>
 
       {/* Search */}
-      <div className="relative max-w-sm">
+      <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Rechercher un patient..."
-          className="pl-9"
+          className="pl-9 max-w-sm"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -47,14 +49,68 @@ export default function PatientsPage() {
 
       {isLoading ? (
         <PageLoader />
+      ) : patients.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
+          <p className="text-lg">Aucun patient trouvé</p>
+          <p className="text-sm mt-1">لم يتم العثور على مرضى</p>
+        </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-          {patients.length === 0 ? (
-            <div className="p-12 text-center text-gray-400">
-              <p className="text-lg">Aucun patient trouvé</p>
-              <p className="text-sm mt-1">لم يتم العثور على مرضى</p>
-            </div>
-          ) : (
+        <>
+          {/* ── MOBILE: card list ── */}
+          <div className="md:hidden space-y-2">
+            {patients.map((patient) => (
+              <Link
+                key={patient.id}
+                href={`/patients/${patient.id}`}
+                className="flex items-center gap-3 bg-white rounded-xl border border-gray-200 p-3 hover:border-teal-300 hover:shadow-sm transition-all"
+              >
+                {/* Avatar */}
+                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-bold text-sm flex-shrink-0">
+                  {patient.name.charAt(0).toUpperCase()}
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm text-gray-900 truncate">{patient.name}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <a
+                      href={`tel:${patient.phone}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1 text-xs text-gray-500"
+                    >
+                      <Phone className="h-3 w-3" />
+                      {patient.phone}
+                    </a>
+                  </div>
+                  {patient.tags.length > 0 && (
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {patient.tags.map((tag) => (
+                        <Badge key={tag} variant="outline" className="text-xs px-1 py-0">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* RDV count + source */}
+                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <Calendar className="h-3 w-3" />
+                    <span>{patient._count.appointments}</span>
+                  </div>
+                  {patient.source && (
+                    <Badge variant="secondary" className="text-xs px-1.5 capitalize">
+                      {patient.source}
+                    </Badge>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* ── DESKTOP: table ── */}
+          <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
@@ -104,15 +160,16 @@ export default function PatientsPage() {
                 ))}
               </tbody>
             </table>
-          )}
+          </div>
+
           {hasNextPage && (
-            <div className="p-4 border-t border-gray-100 text-center">
+            <div className="text-center">
               <Button variant="outline" size="sm" onClick={() => fetchNextPage()}>
                 Charger plus
               </Button>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );
