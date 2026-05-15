@@ -21,18 +21,16 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    try {
-      const result = await signIn.email({ email, password });
-      if (result.error) {
-        setError("Email ou mot de passe incorrect");
-      } else {
-        router.push("/dashboard");
-      }
-    } catch {
-      setError("Erreur de connexion. Veuillez réessayer.");
-    } finally {
+    const { error: authError } = await signIn(email, password);
+
+    if (authError) {
+      setError(authError);
       setLoading(false);
+      return;
     }
+
+    router.push("/dashboard");
+    router.refresh();
   };
 
   return (
@@ -93,7 +91,7 @@ export default function LoginPage() {
 
         <div className="mt-4 text-center text-xs text-gray-500">
           <p>Plateforme réservée aux professionnels de santé</p>
-          <p className="mt-1 font-arabic">منصة مخصصة للمهنيين الصحيين</p>
+          <p className="mt-1" dir="rtl">منصة مخصصة للمهنيين الصحيين</p>
         </div>
       </CardContent>
     </Card>

@@ -13,6 +13,7 @@ export function Header() {
   const handleSignOut = async () => {
     await signOut();
     router.push("/login");
+    router.refresh();
   };
 
   return (

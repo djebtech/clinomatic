@@ -41,16 +41,18 @@ model Clinic {
 }
 
 model User {
-  id          String    @id @default(cuid())
-  clinicId    String?
-  name        String
-  phone       String    @unique
-  email       String?   @unique
-  password    String?
-  role        Role      @default(CLINIC_STAFF)
-  isActive    Boolean   @default(true)
-  lastActive  DateTime?
-  createdAt   DateTime  @default(now())
+  id             String    @id @default(cuid())
+  clinicId       String?
+  name           String
+  phone          String    @unique
+  email          String?   @unique
+  emailVerified  Boolean   @default(false)
+  password       String?
+  role           Role      @default(CLINIC_STAFF)
+  isActive       Boolean   @default(true)
+  lastActive     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
 
   clinic      Clinic?   @relation(fields: [clinicId], references: [id])
   confirmedAppointments Appointment[] @relation("ConfirmedBy")

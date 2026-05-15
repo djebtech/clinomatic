@@ -1,23 +1,34 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
 
-const PUBLIC_ROUTES = ["/login", "/api/auth", "/api/webhooks"];
+const SESSION_COOKIE = "clinomatic_session";
+
+const PUBLIC_PATHS = [
+  "/login",
+  "/api/auth/login",
+  "/api/auth/logout",
+  "/api/auth/session",
+  "/api/webhooks",
+  "/api/trpc",
+];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
+  // Allow public paths without auth check
+  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
+  // Allow all other API routes
   if (pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
 
-  const session = await auth.api.getSession({ headers: request.headers });
+  // Check for session cookie — lightweight check, no DB call in edge
+  const token = request.cookies.get(SESSION_COOKIE)?.value;
 
-  if (!session && pathname !== "/login") {
+  if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

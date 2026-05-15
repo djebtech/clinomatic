@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --no-import-alias --yes)"
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --no-import-alias --yes)",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(mkdir -p /Users/macbook/Desktop/clinomatic/src/app/api/trpc/\\\\[trpc\\\\])",
+      "Bash(mkdir -p /Users/macbook/Desktop/clinomatic/src/app/api/auth/\\\\[...all\\\\])",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(git remote *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(rm -rf /Users/macbook/Desktop/clinomatic/src/app/api/auth/\\\\[...all\\\\] && echo \"Removed\")"
     ]
   }
 }
