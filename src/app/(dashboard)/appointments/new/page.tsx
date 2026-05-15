@@ -18,11 +18,8 @@ function NewAppointmentForm() {
 
   const { data: services } = trpc.service.list.useQuery();
   const { data: doctors } = trpc.doctor.list.useQuery();
-  const { data: patientsData } = trpc.patient.list.useInfiniteQuery(
-    { limit: 100 },
-    { getNextPageParam: (last) => last.nextCursor }
-  );
-  const patients = patientsData?.pages.flatMap((p) => p.patients) ?? [];
+  const { data: patientsData } = trpc.patient.list.useQuery({ limit: 100, page: 1 });
+  const patients = patientsData?.patients ?? [];
 
   const createAppointment = trpc.appointment.create.useMutation({
     onSuccess: (apt) => router.push(`/appointments/${apt.id}`),

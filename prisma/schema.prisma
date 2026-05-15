@@ -59,6 +59,8 @@ model User {
   performance AgentPerformance?
   sessions    Session[]
   accounts    Account[]
+  patientNotes PatientNote[]
+  uploadedFiles PatientFile[] @relation("UploadedFiles")
 
   @@index([clinicId])
   @@index([role])
@@ -81,12 +83,26 @@ model Patient {
   dateOfBirth     DateTime?
   gender          String?
   address         String?
+  city            String?
   notes           String?   @db.Text
 
   phoneHash       String    @unique
   globalRiskScore Float     @default(0)
   tags            String[]
   source          String?
+
+  // Medical info
+  bloodType            String?
+  allergies            String?  @db.Text
+  chronicConditions    String?  @db.Text
+  currentMedications   String?  @db.Text
+  emergencyContactName  String?
+  emergencyContactPhone String?
+
+  // Consent
+  consentSMS       Boolean   @default(true)
+  consentWhatsApp  Boolean   @default(true)
+  consentMarketing Boolean   @default(false)
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -95,10 +111,41 @@ model Patient {
   clinic           Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   appointments     Appointment[]
   whatsappMessages WhatsAppMessage[]
+  notes_list       PatientNote[]
+  files            PatientFile[]
 
   @@unique([clinicId, phone])
   @@index([phoneHash])
   @@index([clinicId])
+}
+
+model PatientNote {
+  id        String   @id @default(cuid())
+  patientId String
+  authorId  String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id])
+
+  @@index([patientId])
+}
+
+model PatientFile {
+  id         String   @id @default(cuid())
+  patientId  String
+  fileName   String
+  fileUrl    String
+  fileType   String
+  fileSize   Int?
+  uploadedBy String
+  uploadedAt DateTime @default(now())
+
+  patient    Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  uploader   User     @relation("UploadedFiles", fields: [uploadedBy], references: [id])
+
+  @@index([patientId])
 }
 
 model Doctor {
