@@ -31,6 +31,15 @@ model Clinic {
   bookingPageEnabled        Boolean  @default(true)
   bookingPageCustomization  Json?
 
+  // Billing / subscription
+  subscriptionStartDate DateTime?
+  nextBillingDate       DateTime?
+  suspendedAt           DateTime?
+  cancelledAt           DateTime?
+  cancellationReason    String?
+  balance               Int       @default(0)   // positive = credit, negative = owes
+  paymentMethod         String?                  // "bank_transfer" | "ccp" | "baridimob" | "cash"
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -44,6 +53,9 @@ model Clinic {
   dailyStats          DailyStats[]
   agentAssignments    ClinicAgent[]
   bookingPageVisits   BookingPageVisit[]
+  invoices            Invoice[]
+  payments            Payment[]
+  subscriptionNotes   SubscriptionNote[]
 }
 
 model User {
@@ -71,6 +83,8 @@ model User {
   agentClinics        ClinicAgent[]         @relation("AgentClinics")
   assignedByMe        ClinicAgent[]         @relation("AssignedBy")
   scheduledCallbacks  ScheduledCallback[]
+  recordedPayments    Payment[]             @relation("RecordedBy")
+  subscriptionNotes   SubscriptionNote[]
 
   dailyTarget    Int?      @default(30)
   workingHoursAgent Json?
@@ -552,4 +566,106 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@unique([identifier, value])
+}
+
+// ============================================
+// BILLING & SUBSCRIPTION MANAGEMENT
+// ============================================
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  clinicId      String
+  invoiceNumber String        @unique
+  date          DateTime      @default(now())
+  dueDate       DateTime
+  amount        Int           // total in DA
+  discountAmount Int          @default(0)
+  currency      String        @default("DZD")
+  status        InvoiceStatus @default(UNPAID)
+  period        String?       // "Mai 2026"
+  lineItems     Json?         // [{description, quantity, unitPrice, total}]
+  notes         String?       @db.Text
+  pdfUrl        String?
+  sentAt        DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+
+  clinic        Clinic          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  payments      Payment[]
+  reminders     PaymentReminder[]
+
+  @@index([clinicId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model Payment {
+  id                   String   @id @default(cuid())
+  clinicId             String
+  invoiceId            String?
+  amount               Int
+  currency             String   @default("DZD")
+  paymentDate          DateTime
+  paymentMethod        String   // bank_transfer | ccp | baridimob | cash | card
+  transactionReference String?
+  payerName            String?
+  notes                String?  @db.Text
+  receiptUrl           String?
+  recordedBy           String?
+  createdAt            DateTime @default(now())
+
+  clinic               Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  invoice              Invoice? @relation(fields: [invoiceId], references: [id])
+  recorder             User?    @relation("RecordedBy", fields: [recordedBy], references: [id])
+
+  @@index([clinicId])
+  @@index([invoiceId])
+}
+
+model PaymentReminder {
+  id        String   @id @default(cuid())
+  invoiceId String
+  type      String   // before_5d | due_today | overdue_7d | overdue_14d | overdue_30d | overdue_45d
+  sentAt    DateTime @default(now())
+  method    String?  // email | whatsapp | both
+
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model SubscriptionNote {
+  id        String   @id @default(cuid())
+  clinicId  String
+  authorId  String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id])
+
+  @@index([clinicId])
+}
+
+model PlanChangeLog {
+  id          String   @id @default(cuid())
+  clinicId    String
+  fromPlan    String
+  toPlan      String
+  fromFee     Int
+  toFee       Int
+  changedBy   String?
+  reason      String?
+  effectiveAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
 }

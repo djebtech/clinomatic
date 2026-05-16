@@ -1,1 +1,7 @@
-{"crons":[{"path":"/api/cron/send-scheduled-messages","schedule":"*/5 * * * *"}]}
+{
+  "crons": [
+    {"path": "/api/cron/send-scheduled-messages", "schedule": "*/5 * * * *"},
+    {"path": "/api/cron/generate-monthly-invoices", "schedule": "0 6 1 * *"},
+    {"path": "/api/cron/check-payment-reminders", "schedule": "0 9 * * *"}
+  ]
+}
