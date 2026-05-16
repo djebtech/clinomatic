@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: clinomatic-whatsapp-api
+    runtime: docker
+    repo: https://github.com/EvolutionAPI/evolution-api
+    branch: v2.2.3
+    dockerfilePath: ./Docker/Dockerfile
+    envVars:
+      - key: SERVER_URL
+        value: https://clinomatic-whatsapp-api.onrender.com
+      - key: AUTHENTICATION_TYPE
+        value: apikey
+      - key: AUTHENTICATION_API_KEY
+        generateValue: true
+      - key: DATABASE_ENABLED
+        value: true
+      - key: DATABASE_CONNECTION_URI
+        fromDatabase:
+          name: evolution-postgres
+          property: connectionString
+      - key: DATABASE_CONNECTION_CLIENT_NAME
+        value: pg
+      - key: DATABASE_SAVE_DATA_INSTANCE
+        value: true
+      - key: DATABASE_SAVE_DATA_NEW_MESSAGE
+        value: true
+      - key: DATABASE_SAVE_MESSAGE_UPDATE
+        value: true
+      - key: DATABASE_SAVE_DATA_CONTACTS
+        value: true
+      - key: DATABASE_SAVE_DATA_CHATS
+        value: true
+      - key: WEBHOOK_GLOBAL_URL
+        value: https://clinomatic.vercel.app/api/webhooks/whatsapp
+      - key: WEBHOOK_GLOBAL_ENABLED
+        value: true
+      - key: WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS
+        value: true
+      - key: QRCODE_LIMIT
+        value: 30
+      - key: LOG_LEVEL
+        value: ERROR
+    healthCheckPath: /
+    plan: free
+
+databases:
+  - name: evolution-postgres
+    databaseName: evolution
+    plan: free

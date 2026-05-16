@@ -2,6 +2,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter } from "../trpc";
 import { clinicProcedure } from "../procedures";
+import { scheduleMessagesForAppointment, scheduleNoShowRecovery } from "@/lib/whatsapp/scheduler";
 
 const StatusSchema = z.enum([
   "PENDING", "CONFIRMING", "CONFIRMED", "ATTENDED", "NO_SHOW", "CANCELLED", "RESCHEDULED",
@@ -257,7 +258,7 @@ export const appointmentRouter = createTRPCRouter({
       const service = await ctx.prisma.service.findUnique({ where: { id: input.serviceId } });
       if (!service) throw new TRPCError({ code: "NOT_FOUND", message: "Service not found" });
 
-      return ctx.prisma.appointment.create({
+      const appointment = await ctx.prisma.appointment.create({
         data: {
           clinicId: ctx.clinicId!,
           patientId: input.patientId,
@@ -282,6 +283,13 @@ export const appointmentRouter = createTRPCRouter({
         },
         include: { patient: true, service: true, doctor: true },
       });
+
+      // Fire-and-forget: schedule WhatsApp messages
+      scheduleMessagesForAppointment({ appointmentId: appointment.id, clinicId: ctx.clinicId! }).catch(
+        (err) => console.error("[WhatsApp Scheduler]", err)
+      );
+
+      return appointment;
     }),
 
   update: clinicProcedure
@@ -415,6 +423,12 @@ export const appointmentRouter = createTRPCRouter({
           data: { globalRiskScore: { increment: 10 } },
         }),
       ]);
+
+      // Schedule no-show recovery message
+      scheduleNoShowRecovery(input.id).catch(
+        (err) => console.error("[WhatsApp NoShow Recovery]", err)
+      );
+
       return updated;
     }),
 

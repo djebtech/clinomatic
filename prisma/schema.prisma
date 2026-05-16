@@ -282,17 +282,22 @@ model WhatsAppConfig {
   apiToken        String?
   apiUrl          String?
   isConnected     Boolean  @default(false)
+  instanceName    String?
 
+  autoConfirm     Boolean  @default(true)
   autoReminder24h Boolean  @default(true)
   autoReminder2h  Boolean  @default(true)
   autoFollowUp    Boolean  @default(true)
+  autoNoShowRecovery Boolean @default(false)
   autoRecall      Boolean  @default(false)
   recallDays      Int      @default(180)
 
-  confirmTemplate     String? @db.Text
-  reminder24hTemplate String? @db.Text
-  reminder2hTemplate  String? @db.Text
-  followUpTemplate    String? @db.Text
+  confirmTemplate        String? @db.Text
+  reminder24hTemplate    String? @db.Text
+  reminder2hTemplate     String? @db.Text
+  followUpTemplate       String? @db.Text
+  noShowRecoveryTemplate String? @db.Text
+  recallTemplate         String? @db.Text
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -311,6 +316,8 @@ model WhatsAppMessage {
   content         String    @db.Text
   status          MessageStatus
 
+  externalId      String?
+  scheduledFor    DateTime?
   sentAt          DateTime  @default(now())
   deliveredAt     DateTime?
   readAt          DateTime?
@@ -323,6 +330,9 @@ model WhatsAppMessage {
   @@index([appointmentId])
   @@index([patientId])
   @@index([sentAt])
+  @@index([externalId])
+  @@index([scheduledFor])
+  @@index([status])
 }
 
 enum Direction {
