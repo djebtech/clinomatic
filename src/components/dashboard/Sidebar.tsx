@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, Calendar, CheckCircle,
   BarChart3, Settings, Building2, Stethoscope, X,
+  UserCog, ClipboardList, TrendingUp,
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
@@ -23,9 +24,12 @@ const NAV_ITEMS: NavItem[] = [
   { key: "nav.patients", href: "/patients", icon: Users, roles: ["CLINIC_OWNER", "CLINIC_STAFF", "DOCTOR"] },
   { key: "nav.appointments", href: "/appointments", icon: Calendar, roles: ["CLINIC_OWNER", "CLINIC_STAFF", "DOCTOR"] },
   { key: "nav.confirmations", href: "/confirmations", icon: CheckCircle, roles: ["CONFIRMATION_AGENT", "SUPER_ADMIN"] },
+  { key: "nav.agent_queue", href: "/agent/queue", icon: ClipboardList, roles: ["CONFIRMATION_AGENT"] },
+  { key: "nav.agent_performance", href: "/agent/performance", icon: TrendingUp, roles: ["CONFIRMATION_AGENT"] },
   { key: "nav.analytics", href: "/analytics", icon: BarChart3, roles: ["CLINIC_OWNER", "SUPER_ADMIN"] },
   { key: "nav.settings", href: "/settings", icon: Settings, roles: ["CLINIC_OWNER"] },
   { key: "nav.admin", href: "/admin", icon: Building2, roles: ["SUPER_ADMIN"] },
+  { key: "nav.confirmation_manager", href: "/admin/confirmation-manager", icon: UserCog, roles: ["SUPER_ADMIN"] },
 ];
 
 export function Sidebar() {
