@@ -61,6 +61,7 @@ model User {
   accounts    Account[]
   patientNotes PatientNote[]
   uploadedFiles PatientFile[] @relation("UploadedFiles")
+  appointmentTimeline AppointmentTimeline[]
 
   @@index([clinicId])
   @@index([role])
@@ -228,11 +229,26 @@ model Appointment {
   service          Service   @relation(fields: [serviceId], references: [id])
   confirmer        User?     @relation("ConfirmedBy", fields: [confirmedBy], references: [id])
   whatsappMessages WhatsAppMessage[]
+  timeline         AppointmentTimeline[]
 
   @@index([clinicId, date])
   @@index([status])
   @@index([patientId])
   @@index([confirmedBy])
+}
+
+model AppointmentTimeline {
+  id            String   @id @default(cuid())
+  appointmentId String
+  userId        String?
+  action        String
+  details       Json?
+  createdAt     DateTime @default(now())
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  user          User?       @relation(fields: [userId], references: [id])
+
+  @@index([appointmentId])
 }
 
 enum AppointmentStatus {
