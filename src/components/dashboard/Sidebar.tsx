@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, Calendar, CheckCircle,
   BarChart3, Settings, Building2, Stethoscope, X,
-  UserCog, ClipboardList, TrendingUp,
+  UserCog, ClipboardList, TrendingUp, Bell, Activity,
+  CreditCard, UserSquare2,
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
@@ -27,8 +28,14 @@ const NAV_ITEMS: NavItem[] = [
   { key: "nav.agent_queue", href: "/agent/queue", icon: ClipboardList, roles: ["CONFIRMATION_AGENT"] },
   { key: "nav.agent_performance", href: "/agent/performance", icon: TrendingUp, roles: ["CONFIRMATION_AGENT"] },
   { key: "nav.analytics", href: "/analytics", icon: BarChart3, roles: ["CLINIC_OWNER", "SUPER_ADMIN"] },
+  { key: "nav.team", href: "/clinic/team", icon: UserSquare2, roles: ["CLINIC_OWNER"] },
   { key: "nav.settings", href: "/settings", icon: Settings, roles: ["CLINIC_OWNER"] },
+  { key: "nav.profile", href: "/settings/profile", icon: UserCog, roles: ["CLINIC_OWNER", "CLINIC_STAFF", "CONFIRMATION_AGENT", "DOCTOR"] },
+  { key: "nav.notifications", href: "/settings/notifications", icon: Bell, roles: ["CLINIC_OWNER", "CLINIC_STAFF", "CONFIRMATION_AGENT", "DOCTOR"] },
+  { key: "nav.activity", href: "/settings/activity", icon: Activity, roles: ["CLINIC_OWNER"] },
   { key: "nav.admin", href: "/admin", icon: Building2, roles: ["SUPER_ADMIN"] },
+  { key: "nav.billing", href: "/admin/billing", icon: CreditCard, roles: ["SUPER_ADMIN"] },
+  { key: "nav.admin_team", href: "/admin/team", icon: Users, roles: ["SUPER_ADMIN"] },
   { key: "nav.confirmation_manager", href: "/admin/confirmation-manager", icon: UserCog, roles: ["SUPER_ADMIN"] },
 ];
 

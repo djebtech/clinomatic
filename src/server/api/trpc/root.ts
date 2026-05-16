@@ -11,6 +11,10 @@ import { adminRouter } from "./routers/admin.router";
 import { confirmationManagerRouter } from "./routers/confirmationManager.router";
 import { publicBookingRouter } from "./routers/publicBooking.router";
 import { billingRouter } from "./routers/billing.router";
+import { notificationRouter } from "./routers/notification.router";
+import { userRouter } from "./routers/user.router";
+import { teamRouter } from "./routers/team.router";
+import { activityLogRouter } from "./routers/activityLog.router";
 
 export const appRouter = createTRPCRouter({
   clinic: clinicRouter,
@@ -25,6 +29,10 @@ export const appRouter = createTRPCRouter({
   confirmationManager: confirmationManagerRouter,
   publicBooking: publicBookingRouter,
   billing: billingRouter,
+  notification: notificationRouter,
+  user: userRouter,
+  team: teamRouter,
+  activityLog: activityLogRouter,
 });
 
 export type AppRouter = typeof appRouter;

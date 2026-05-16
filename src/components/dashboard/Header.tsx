@@ -1,6 +1,7 @@
 "use client";
 
-import { Bell, LogOut, Globe, Menu, Check } from "lucide-react";
+import { LogOut, Globe, Menu, Check } from "lucide-react";
+import { NotificationBell } from "./NotificationBell";
 import { signOut } from "@/lib/auth-client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useRouter } from "next/navigation";
@@ -111,9 +112,7 @@ export function Header() {
         <LanguageSwitcher />
 
         {/* Notifications */}
-        <Button variant="ghost" size="icon" title="Notifications" className="h-8 w-8">
-          <Bell className="h-4 w-4" />
-        </Button>
+        <NotificationBell />
 
         {/* User avatar — hidden on mobile */}
         {user && (

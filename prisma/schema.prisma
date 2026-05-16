@@ -91,6 +91,21 @@ model User {
   employmentType String?
   startDate      DateTime? @db.Date
 
+  // Notifications & permissions
+  notificationPreferences Json?
+  permissions             Json?
+  avatar                  String?
+  jobTitle                String?
+  department              String?
+  timezone                String?   @default("Africa/Algiers")
+  invitedBy               String?   // ID of user who invited them
+  invitedAt               DateTime?
+
+  notifications       Notification[]
+  activityLogs        ActivityLog[]
+  invitationsReceived InvitationToken[] @relation("InvitedUser")
+  invitationsSent     InvitationToken[] @relation("InviterOf")
+
   @@index([clinicId])
   @@index([role])
 }
@@ -668,4 +683,78 @@ model PlanChangeLog {
   createdAt   DateTime @default(now())
 
   @@index([clinicId])
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      String    // APPOINTMENT_CREATED | PAYMENT_RECEIVED | WHATSAPP_DISCONNECTED | etc.
+  title     String
+  message   String    @db.Text
+  data      Json?     // { appointmentId, clinicId, etc. }
+  linkUrl   String?   // Deep link to relevant page
+  read      Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@index([userId, read])
+}
+
+// ============================================
+// ACTIVITY LOG
+// ============================================
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  clinicId   String?
+  userId     String?
+  action     String   // APPOINTMENT_CREATED | USER_LOGIN | PAYMENT_RECORDED | etc.
+  targetType String?  // "appointment" | "patient" | "invoice" | "user"
+  targetId   String?
+  targetName String?
+  details    Json?    // before/after or extra context
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([clinicId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([targetType, targetId])
+}
+
+// ============================================
+// TEAM INVITATIONS
+// ============================================
+
+model InvitationToken {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  email       String
+  userId      String    // The newly created (INVITED) user
+  invitedBy   String    // The user who sent the invite
+  clinicId    String?
+  role        String    @default("CLINIC_STAFF")
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation("InvitedUser", fields: [userId], references: [id], onDelete: Cascade)
+  inviter     User      @relation("InviterOf", fields: [invitedBy], references: [id])
+
+  @@index([token])
+  @@index([email])
+  @@index([userId])
 }
