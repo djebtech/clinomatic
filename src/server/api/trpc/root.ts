@@ -9,6 +9,7 @@ import { serviceRouter } from "./routers/service.router";
 import { doctorRouter } from "./routers/doctor.router";
 import { adminRouter } from "./routers/admin.router";
 import { confirmationManagerRouter } from "./routers/confirmationManager.router";
+import { publicBookingRouter } from "./routers/publicBooking.router";
 
 export const appRouter = createTRPCRouter({
   clinic: clinicRouter,
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   doctor: doctorRouter,
   admin: adminRouter,
   confirmationManager: confirmationManagerRouter,
+  publicBooking: publicBookingRouter,
 });
 
 export type AppRouter = typeof appRouter;

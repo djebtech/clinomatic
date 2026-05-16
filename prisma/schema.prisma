@@ -27,6 +27,10 @@ model Clinic {
   monthlyFee      Int       @default(12000)
   isActive        Boolean   @default(true)
 
+  // Public booking page
+  bookingPageEnabled        Boolean  @default(true)
+  bookingPageCustomization  Json?
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -39,6 +43,7 @@ model Clinic {
   socialIntegrations  SocialIntegration[]
   dailyStats          DailyStats[]
   agentAssignments    ClinicAgent[]
+  bookingPageVisits   BookingPageVisit[]
 }
 
 model User {
@@ -228,6 +233,8 @@ model Appointment {
   riskScore       Float?
   remindersSent   Int       @default(0)
   notes           String?   @db.Text
+  sourceUrl       String?
+  deviceType      String?
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -383,6 +390,26 @@ enum Platform {
   INSTAGRAM
   FACEBOOK
   WHATSAPP
+}
+
+// ============================================
+// PUBLIC BOOKING PAGE
+// ============================================
+
+model BookingPageVisit {
+  id                  String    @id @default(cuid())
+  clinicId            String
+  ipAddress           String?
+  userAgent           String?
+  referrer            String?
+  visitedAt           DateTime  @default(now())
+  convertedToBooking  Boolean   @default(false)
+  appointmentId       String?
+
+  clinic              Clinic       @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([visitedAt])
 }
 
 // ============================================
